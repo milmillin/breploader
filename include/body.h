@@ -14,6 +14,7 @@
 #include <Eigen/Core>
 #include <iostream>
 #include <memory>
+#include <vector>
 #include "types.h"
 
 namespace pspy {
@@ -61,6 +62,8 @@ public:
         Eigen::VectorXi& VtoT,
         bool set_quality = false,
         double quality = 0.01);
+    
+    std::vector<std::shared_ptr<PSBody>> Boolean(std::shared_ptr<PSBody> tool, BooleanOperation operation);
 
     void debug();
 

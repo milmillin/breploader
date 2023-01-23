@@ -81,6 +81,12 @@ enum class InferenceType {
     LOOP_CENTER // First edge of planar loop, also not CIRCLE
 };
 
+enum class BooleanOperation {
+    INTERSECT,
+    SUBTRACT,
+    UNITE
+};
+
 const double XFRM_TOL = 0.999;
 const double MASS_ACC = 0.999;
 

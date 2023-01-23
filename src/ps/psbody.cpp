@@ -438,6 +438,43 @@ void PSBody::Tesselate(
     PK_TOPOL_facet_2_r_f(&facets);
 }
 
+std::vector<std::shared_ptr<PSBody>> PSBody::Boolean(std::shared_ptr<PSBody> tool, BooleanOperation operation) {
+    PK_ERROR_t err = PK_ERROR_no_errors;
+    
+    PK_BODY_boolean_o_t bool_opts;
+	PK_BODY_boolean_o_m(bool_opts);
+	PK_boolean_match_o_t match_opts;
+	PK_boolean_match_o_m(match_opts);
+	match_opts.match_style = PK_boolean_match_style_auto_c;	// We recommend always using the auto_c match option
+	bool_opts.matched_region = &match_opts;
+
+	PK_TOPOL_track_r_t tracking;
+    PK_boolean_r_t results;
+
+    switch (operation) {
+        case BooleanOperation::UNITE:
+            bool_opts.function = PK_boolean_unite_c;
+            break;
+        case BooleanOperation::INTERSECT:
+            bool_opts.function = PK_boolean_intersect_c;
+            break;
+        case BooleanOperation::SUBTRACT:
+            bool_opts.function = PK_boolean_subtract_c;
+            break;
+    }
+
+    err = PK_BODY_boolean_2(_id, 1, &tool->_id, &bool_opts, &tracking, &results);
+    PK_TOPOL_track_r_f(&tracking);
+
+    std::vector<std::shared_ptr<PSBody>> res;
+    if (err == PK_ERROR_no_errors && results.result != PK_boolean_result_failed_c) {
+        for (int i = 0; i < results.n_bodies; i++) {
+            res.push_back(std::make_shared<PSBody>(results.bodies[i]));
+        }
+    }
+    return res;
+}
+
 void PSBody::debug() {
     PK_ERROR_t err = PK_ERROR_no_errors;
     PK_CLASS_t entity_class;
